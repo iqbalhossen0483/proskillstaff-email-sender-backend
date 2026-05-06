@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.env.local
+gcs-bucket-key.json
+*.log
+.DS_Store
+coverage
+.idea
+.vscode
+*.tsbuildinfo
