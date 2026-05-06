@@ -16,7 +16,7 @@ interface DispatchJobData {
   sendId: number;
   recipientEmails: string[];
   subject: string;
-  contentJson: Record<string, unknown>;
+  contentJson: LayoutAContent | LayoutBContent;
   layoutSlug: string;
 }
 
@@ -46,12 +46,8 @@ export class EmailDispatchProcessor extends WorkerHost {
     try {
       const html =
         layoutSlug === 'layout_a'
-          ? this.renderer.renderLayoutA(
-              contentJson as unknown as LayoutAContent,
-            )
-          : this.renderer.renderLayoutB(
-              contentJson as unknown as LayoutBContent,
-            );
+          ? this.renderer.renderLayoutA(contentJson as LayoutAContent)
+          : this.renderer.renderLayoutB(contentJson as LayoutBContent);
 
       if (!this.resend) {
         this.logger.warn(
