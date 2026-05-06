@@ -152,7 +152,7 @@ Stack: NestJS · TypeORM · PostgreSQL · class-validator · Helmet · Redis · 
 - [x] **`PATCH /users/:id`**: DTO — `name?`, `email?`, `role?`. Guard: if changing role away from `super_admin`, check there is at least one other `super_admin` remaining (throw 422 if last one). Return updated user.
 - [x] **`PATCH /users/:id/suspend`**: set `status = 'suspended'`. Optionally add active JWT to Redis blacklist (if token id is stored).
 - [x] **`PATCH /users/:id/reactivate`**: set `status = 'active'`.
-- [x] **`DELETE /users/:id`**: hard delete. Before deletion, null out `EmailSend.sent_by` and `EmailTemplate.created_by` FKs (or let DB handle with `SET NULL` on FK). Throw 422 if attempting to delete the last `super_admin`.
+- [x] **`DELETE /users/:id`**: soft delete user. Throw 422 if attempting to delete the last `super_admin`.
 - [x] **`POST /users/:id/reset-password`**: trigger the same forgot-password token generation + Resend invite email on behalf of the user. Return 200.
 
 ---
@@ -160,7 +160,8 @@ Stack: NestJS · TypeORM · PostgreSQL · class-validator · Helmet · Redis · 
 ## Milestone 4 — File Upload (GCS) ✅
 
 - [x] Create `UploadsModule` with `UploadsController`, `UploadsService`
-- [x] **`POST /uploads/team-photo`**: accepts `multipart/form-data` with a single image file (max 5MB, accept `image/jpeg`, `image/png`, `image/webp`). Upload to GCS bucket with a uuid filename. Return `{ url: 'https://storage.googleapis.com/...' }`.
+- [x] **`POST /uploads`**: accepts `multipart/form-data` with a single image file (max 5MB, accept `image/jpeg`, `image/png`, `image/webp`). Upload to GCS bucket with a uuid filename. Return `{ url: 'https://storage.googleapis.com/...' }`.
+- [x] **`DELETE /uploads`** DTO - `url` delete the file from GCS.
 - [x] Use `@google-cloud/storage` with key file path from env `GCS_KEY_FILE` and bucket from `GCS_BUCKET`
 - [x] Make uploaded objects publicly readable (`gcsFile.makePublic()`)
 - [x] Endpoint requires `JwtAuthGuard`
