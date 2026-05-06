@@ -157,13 +157,13 @@ Stack: NestJS · TypeORM · PostgreSQL · class-validator · Helmet · Redis · 
 
 ---
 
-## Milestone 4 — File Upload (GCS)
+## Milestone 4 — File Upload (GCS) ✅
 
-- [ ] Create `UploadsModule` with `UploadsController`, `UploadsService`
-- [ ] **`POST /uploads/team-photo`**: accepts `multipart/form-data` with a single image file (max 5MB, accept `image/jpeg`, `image/png`, `image/webp`). Upload to GCS bucket with a uuid filename. Return `{ url: 'https://storage.googleapis.com/...' }`.
-- [ ] Use `@google-cloud/storage` with key file path from env `GCS_KEY_FILE` and bucket from `GCS_BUCKET`
-- [ ] Make uploaded objects publicly readable (or use signed URLs — decide based on whether photos are public)
-- [ ] Endpoint requires `JwtAuthGuard`
+- [x] Create `UploadsModule` with `UploadsController`, `UploadsService`
+- [x] **`POST /uploads/team-photo`**: accepts `multipart/form-data` with a single image file (max 5MB, accept `image/jpeg`, `image/png`, `image/webp`). Upload to GCS bucket with a uuid filename. Return `{ url: 'https://storage.googleapis.com/...' }`.
+- [x] Use `@google-cloud/storage` with key file path from env `GCS_KEY_FILE` and bucket from `GCS_BUCKET`
+- [x] Make uploaded objects publicly readable (`gcsFile.makePublic()`)
+- [x] Endpoint requires `JwtAuthGuard`
 
 ---
 

@@ -12,12 +12,13 @@ import { NotificationsModule } from '@/notifications/notifications.module';
 import { RedisModule } from '@/redis/redis.module';
 import { SendsModule } from '@/sends/sends.module';
 import { TemplatesModule } from '@/templates/templates.module';
+import { UploadsModule } from '@/uploads/uploads.module';
+import { UsersModule } from '@/users/users.module';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { UsersModule } from './users/users.module';
     SendsModule,
     DashboardModule,
     UsersModule,
+    UploadsModule,
   ],
   controllers: [HealthController],
 })
