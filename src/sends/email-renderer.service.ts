@@ -61,210 +61,292 @@ export class EmailRendererService {
   // ✅ Layout A Renderer
   // ======================
   renderLayoutA(content: LayoutAContent): string {
-    const themeColor = content.headerBgColor || '#1d8b52';
+    const themeColor = content.headerBgColor || '#2563EB';
 
-    const bodyHtml = content.bodyParagraphs
+    // ── Body paragraphs ──────────────────────────────────────────────
+    const bodyHtml = (content.bodyParagraphs ?? [])
       .map(
         (p) =>
-          `<p style="margin:0 0 12px;font-size:15px;color:#374151;">${p}</p>`,
+          `<p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">${p}</p>`,
       )
       .join('');
 
-    const membersHtml = content.teamMembers.length
-      ? content.teamMembers
-          .map(
-            (m) => `
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-          <tr>
-            ${
-              m.photoUrl
-                ? `<td width="70" style="padding-right:12px;">
-                    <img src="${m.photoUrl}" width="60" height="60"
-                      style="border-radius:50%;object-fit:cover;" />
-                  </td>`
-                : ''
-            }
-            <td>
-              <p style="margin:0;font-weight:bold;color:#111827;">${m.name}</p>
-              <p style="margin:4px 0;font-size:13px;color:#6B7280;">${m.title}</p>
-              ${
-                m.bio
-                  ? `<p style="margin:6px 0;font-size:14px;color:#374151;">${m.bio}</p>`
-                  : ''
-              }
-            </td>
-          </tr>
-        </table>`,
-          )
-          .join('')
-      : '';
-
-    const cta =
+    // ── CTA button ───────────────────────────────────────────────────
+    const ctaHtml =
       content.ctaLabel && content.ctaUrl
-        ? `<div style="margin:24px 0;">
-            <a href="${content.ctaUrl}"
-               style="display:inline-block;
-                      padding:10px 18px;
-                      background:${themeColor};
-                      color:#fff;
-                      border-radius:6px;
-                      text-decoration:none;">
-              ${content.ctaLabel}
-            </a>
-          </div>`
+        ? `<div style="text-align:center;margin:24px 0;">
+          <a href="${content.ctaUrl}"
+             style="display:inline-block;
+                    background:${themeColor};
+                    color:#ffffff;
+                    padding:12px 28px;
+                    border-radius:6px;
+                    text-decoration:none;
+                    font-size:15px;
+                    font-weight:600;">
+            ${content.ctaLabel}
+          </a>
+        </div>`
         : '';
 
-    return this.wrap(`
-      <!-- HEADER -->
-      <div style="background:${themeColor};padding:16px;border-radius:6px;margin-bottom:20px;">
-        <h2 style="margin:0;color:#fff;font-size:18px;">
-          ${content.companyName}
-        </h2>
+    // ── Team members ─────────────────────────────────────────────────
+    const teamHtml =
+      content.teamMembers?.length > 0
+        ? `<hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0;" />
+         <p style="margin:0 0 20px;font-size:16px;font-weight:600;color:#111827;">
+           Meet the Team
+         </p>
+         ${content.teamMembers
+           .map((m) => {
+             const avatar = m.photoUrl
+               ? `<img src="${m.photoUrl}" width="56" height="56"
+                    style="border-radius:50%;object-fit:cover;display:block;" />`
+               : `<div style="width:56px;height:56px;border-radius:50%;
+                             background:#E5E7EB;display:flex;align-items:center;
+                             justify-content:center;font-size:18px;color:#9CA3AF;">
+                    ${m.name?.[0] ?? '?'}
+                  </div>`;
+             return `
+               <table width="100%" cellpadding="0" cellspacing="0"
+                      style="margin-bottom:20px;">
+                 <tr>
+                   <td width="72" style="vertical-align:top;padding-right:16px;">
+                     ${avatar}
+                   </td>
+                   <td style="vertical-align:top;">
+                     <p style="margin:0;font-size:15px;font-weight:600;
+                                color:#111827;">${m.name}</p>
+                     <p style="margin:3px 0 0;font-size:13px;
+                                color:#6B7280;">${m.title}</p>
+                   </td>
+                 </tr>
+               </table>`;
+           })
+           .join('')}`
+        : '';
+
+    // ── Contact block ────────────────────────────────────────────────
+    const hasContact =
+      content.contactEmail ||
+      content.contactPhone ||
+      content.contactWebsite ||
+      content.contactAddress;
+
+    const contactHtml = hasContact
+      ? `<hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0;" />
+       <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6B7280;
+                 text-transform:uppercase;letter-spacing:0.05em;">Contact</p>
+       ${content.contactEmail ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactEmail}</p>` : ''}
+       ${content.contactPhone ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactPhone}</p>` : ''}
+       ${content.contactWebsite ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactWebsite}</p>` : ''}
+       ${content.contactAddress ? `<p style="margin:0;font-size:14px;color:#374151;">${content.contactAddress}</p>` : ''}`
+      : '';
+
+    // ── Footer ───────────────────────────────────────────────────────
+    const footerHtml = `
+    <tr>
+      <td style="background:#F9FAFB;padding:16px 40px;
+                 border-top:1px solid #E5E7EB;
+                 border-radius:0 0 8px 8px;">
+        <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
+          ${content.companyName ?? ''} · Unsubscribe
+        </p>
+      </td>
+    </tr>`;
+
+    // ── Assemble ─────────────────────────────────────────────────────
+    const innerBody = `
+    <!-- HEADER -->
+    <tr>
+      <td style="background:${themeColor};padding:32px 40px;
+                 border-radius:8px 8px 0 0;">
+        <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">
+          ${content.companyName ?? 'Company Name'}
+        </p>
         ${
           content.tagline
-            ? `<p style="margin:6px 0 0;color:#e5e7eb;font-size:13px;">
-                ${content.tagline}
-              </p>`
+            ? `<p style="margin:6px 0 0;font-size:14px;
+                          color:rgba(255,255,255,0.85);">
+                 ${content.tagline}
+               </p>`
             : ''
         }
-      </div>
+      </td>
+    </tr>
 
-      <h1 style="font-size:22px;color:#111827;margin:0 0 10px;">
-        ${content.subjectLine}
-      </h1>
+    <!-- BODY -->
+    <tr>
+      <td style="padding:32px 40px;">
+        ${bodyHtml}
+        ${ctaHtml}
+        ${teamHtml}
+        ${contactHtml}
+      </td>
+    </tr>
 
-      <hr style="border:none;border-top:1px solid #E5E7EB;margin:16px 0;" />
+    <!-- FOOTER -->
+    ${footerHtml}`;
 
-      <!-- BODY -->
-      ${bodyHtml}
-
-      <!-- CTA -->
-      ${cta}
-
-      <!-- TEAM -->
-      ${membersHtml}
-
-      <!-- CONTACT -->
-      <div style="margin-top:30px;font-size:13px;color:#6B7280;">
-        ${content.contactEmail ? `<div>Email: ${content.contactEmail}</div>` : ''}
-        ${content.contactPhone ? `<div>Phone: ${content.contactPhone}</div>` : ''}
-        ${content.contactAddress ? `<div>Address: ${content.contactAddress}</div>` : ''}
-        ${content.contactWebsite ? `<div>Website: ${content.contactWebsite}</div>` : ''}
-      </div>
-    `);
+    return this.wrap(innerBody);
   }
 
   // ======================
   // ✅ Layout B Renderer
   // ======================
   renderLayoutB(content: LayoutBContent): string {
-    const themeColor = content.headerBgColor || '#2563EB';
+    const themeColor = content.headerBgColor || '#7C3AED';
 
-    const bodyHtml = content.bodyParagraphs
+    // ── Greeting ─────────────────────────────────────────────────────
+    const greetingHtml = content.greetingText
+      ? `<p style="margin:0 0 20px;font-size:16px;color:#111827;font-weight:500;">
+         ${content.greetingText}
+       </p>`
+      : '';
+
+    // ── Body paragraphs ───────────────────────────────────────────────
+    const bodyHtml = (content.bodyParagraphs ?? [])
       .map(
         (p) =>
-          `<p style="margin:0 0 12px;font-size:15px;color:#374151;">${p}</p>`,
+          `<p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">${p}</p>`,
       )
       .join('');
 
-    const highlightsHtml = content.highlights
-      .map(
-        (h, i) => `
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #E5E7EB;">
-            <p style="margin:0;font-size:14px;color:#111827;">
-              ${i + 1}. ${h}
-            </p>
-          </td>
-        </tr>`,
-      )
-      .join('');
-
-    const cta =
+    // ── CTA button ────────────────────────────────────────────────────
+    const ctaHtml =
       content.ctaLabel && content.ctaUrl
         ? `<div style="text-align:center;margin:24px 0;">
-            <a href="${content.ctaUrl}"
-               style="display:inline-block;
-                      background:${themeColor};
-                      color:#fff;
-                      padding:10px 20px;
-                      border-radius:6px;
-                      text-decoration:none;">
-              ${content.ctaLabel}
-            </a>
-          </div>`
+           <a href="${content.ctaUrl}"
+              style="display:inline-block;
+                     background:${themeColor};
+                     color:#ffffff;
+                     padding:12px 28px;
+                     border-radius:6px;
+                     text-decoration:none;
+                     font-size:15px;
+                     font-weight:600;">
+             ${content.ctaLabel}
+           </a>
+         </div>`
         : '';
 
-    return this.wrap(`
-      <!-- HEADER -->
-      <div style="background:${themeColor};padding:16px;border-radius:6px;margin-bottom:20px;">
-        <h2 style="margin:0;color:#fff;font-size:18px;">
-          ${content.companyName}
-        </h2>
+    // ── Highlights ────────────────────────────────────────────────────
+    const highlightsHtml =
+      content.highlights?.length > 0
+        ? `<hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0;" />
+         <p style="margin:0 0 16px;font-size:16px;font-weight:600;color:#111827;">
+           Highlights
+         </p>
+         ${content.highlights
+           .map(
+             (item, i) => `
+             <table width="100%" cellpadding="0" cellspacing="0"
+                    style="margin-bottom:12px;">
+               <tr>
+                 <td width="36" style="vertical-align:top;padding-right:12px;">
+                   <div style="width:24px;height:24px;border-radius:50%;
+                               background:${themeColor};color:#ffffff;
+                               font-size:12px;font-weight:700;
+                               text-align:center;line-height:24px;">
+                     ${i + 1}
+                   </div>
+                 </td>
+                 <td style="vertical-align:top;padding-top:4px;">
+                   <p style="margin:0;font-size:14px;color:#374151;line-height:1.5;">
+                     ${item}
+                   </p>
+                 </td>
+               </tr>
+             </table>`,
+           )
+           .join('')}`
+        : '';
+
+    // ── Contact block ─────────────────────────────────────────────────
+    const hasContact =
+      content.contactEmail ||
+      content.contactPhone ||
+      content.contactWebsite ||
+      content.contactAddress;
+
+    const contactHtml = hasContact
+      ? `<hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0;" />
+       <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6B7280;
+                 text-transform:uppercase;letter-spacing:0.05em;">Contact</p>
+       ${content.contactEmail ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactEmail}</p>` : ''}
+       ${content.contactPhone ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactPhone}</p>` : ''}
+       ${content.contactWebsite ? `<p style="margin:0 0 4px;font-size:14px;color:#374151;">${content.contactWebsite}</p>` : ''}
+       ${content.contactAddress ? `<p style="margin:0;font-size:14px;color:#374151;">${content.contactAddress}</p>` : ''}`
+      : '';
+
+    // ── Footer ────────────────────────────────────────────────────────
+    const footerHtml = `
+    <tr>
+      <td style="background:#F9FAFB;padding:16px 40px;
+                 border-top:1px solid #E5E7EB;
+                 border-radius:0 0 8px 8px;">
+        <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
+          ${content.companyName ?? ''} · Unsubscribe
+        </p>
+      </td>
+    </tr>`;
+
+    // ── Assemble ──────────────────────────────────────────────────────
+    const innerBody = `
+    <!-- HEADER -->
+    <tr>
+      <td style="background:${themeColor};padding:32px 40px;
+                 border-radius:8px 8px 0 0;">
+        <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">
+          ${content.companyName ?? 'Company Name'}
+        </p>
         ${
           content.tagline
-            ? `<p style="margin:6px 0 0;color:#e5e7eb;font-size:13px;">
-                ${content.tagline}
-              </p>`
+            ? `<p style="margin:6px 0 0;font-size:14px;
+                          color:rgba(255,255,255,0.85);">
+                 ${content.tagline}
+               </p>`
             : ''
         }
-      </div>
+      </td>
+    </tr>
 
-      <h1 style="font-size:22px;color:#111827;margin:0 0 10px;">
-        ${content.subjectLine}
-      </h1>
-
-      ${
-        content.greetingText
-          ? `<p style="margin:0 0 16px;font-size:15px;color:#374151;">
-              ${content.greetingText}
-            </p>`
-          : ''
-      }
-
-      <hr style="border:none;border-top:1px solid #E5E7EB;margin:16px 0;" />
-
-      <!-- BODY -->
-      ${bodyHtml}
-
-      <!-- HIGHLIGHTS -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px;">
+    <!-- BODY -->
+    <tr>
+      <td style="padding:32px 40px;">
+        ${greetingHtml}
+        ${bodyHtml}
+        ${ctaHtml}
         ${highlightsHtml}
-      </table>
+        ${contactHtml}
+      </td>
+    </tr>
 
-      <!-- CTA -->
-      ${cta}
+    <!-- FOOTER -->
+    ${footerHtml}`;
 
-      <!-- CONTACT -->
-      <div style="margin-top:30px;font-size:13px;color:#6B7280;">
-        ${content.contactEmail ? `<div>Email: ${content.contactEmail}</div>` : ''}
-        ${content.contactPhone ? `<div>Phone: ${content.contactPhone}</div>` : ''}
-        ${content.contactAddress ? `<div>Address: ${content.contactAddress}</div>` : ''}
-        ${content.contactWebsite ? `<div>Website: ${content.contactWebsite}</div>` : ''}
-      </div>
-    `);
+    return this.wrap(innerBody);
   }
 
   // ======================
   // ✅ Wrapper (shared)
   // ======================
-  private wrap(body: string): string {
+  private wrap(rows: string): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
-<body style="margin:0;padding:0;background:#F9FAFB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<body style="margin:0;padding:0;background:#F9FAFB;
+             font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td align="center" style="padding:40px 16px;">
-        <table width="600" cellpadding="0" cellspacing="0"
-          style="background:#ffffff;border-radius:8px;padding:40px;
-                 box-shadow:0 1px 3px rgba(0,0,0,.08);max-width:600px;width:100%;">
-          <tr>
-            <td>${body}</td>
-          </tr>
+      <td align="center" style="padding:32px 16px;">
+        <table cellpadding="0" cellspacing="0"
+          style="background:#ffffff;border-radius:8px;
+                 box-shadow:0 1px 3px rgba(0,0,0,.08);
+                 max-width:600px;width:100%;">
+          ${rows}
         </table>
       </td>
     </tr>
