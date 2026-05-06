@@ -1,4 +1,4 @@
-import { Layout } from '@/entities/layout.entity';
+import { User, UserRole, UserStatus } from '@/entities/user.entity';
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
@@ -9,31 +9,26 @@ async function seed() {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [Layout],
+    entities: [User],
     synchronize: false,
   });
 
   await dataSource.initialize();
-  const repo = dataSource.getRepository(Layout);
+  const repo = dataSource.getRepository(User);
 
-  const layouts = [
-    {
-      slug: 'layout_a',
-      name: 'Layout A — Outreach',
-      description:
-        'Team-focused outreach email with member cards and profile photos.',
-    },
-    {
-      slug: 'layout_b',
-      name: 'Layout B — Announcement',
-      description: 'Announcement email with a highlights list.',
-    },
-  ];
+  const user = await repo.findOneBy({ email: 'iqbalhossen60483@gmail.com' });
+  if (user) throw new Error('User already exists');
 
-  for (const layout of layouts) {
-    await repo.upsert(layout, { conflictPaths: ['slug'] });
-    console.log(`Seeded layout: ${layout.slug}`);
-  }
+  const newUser = repo.create({
+    name: 'Iqbal Hossen',
+    email: 'iqbalhossen60483@gmail.com',
+    password_hash:
+      '$2a$12$uuSEE/lLBPXgWZ6unK6R8u6lf/XGFMFDx1oQXW9SLWIDB5D25uKWu',
+    role: UserRole.SUPER_ADMIN,
+    status: UserStatus.ACTIVE,
+  });
+
+  await repo.save(newUser);
 
   await dataSource.destroy();
   console.log('Seed complete.');

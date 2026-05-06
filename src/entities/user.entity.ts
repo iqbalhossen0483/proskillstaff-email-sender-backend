@@ -45,8 +45,8 @@ export class User {
   @UpdateDateColumn()
   updated_at!: Date;
 
-  @DeleteDateColumn()
-  deleted_at!: Date | null;
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleted_at!: Date;
 
   @Column({ nullable: true, type: 'timestamp' })
   last_login_at!: Date | null;

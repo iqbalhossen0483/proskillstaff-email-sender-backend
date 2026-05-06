@@ -20,6 +20,7 @@ export class InitialSchema1746518400000 implements MigrationInterface {
         "status" "users_status_enum" NOT NULL DEFAULT 'active',
         "created_at" TIMESTAMP NOT NULL DEFAULT now(),
         "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+        "deleted_at" TIMESTAMP DEFAULT NULL,
         "last_login_at" TIMESTAMP,
         CONSTRAINT "UQ_users_email" UNIQUE ("email"),
         CONSTRAINT "PK_users" PRIMARY KEY ("id")
