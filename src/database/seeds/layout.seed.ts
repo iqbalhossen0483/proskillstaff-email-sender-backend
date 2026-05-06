@@ -1,3 +1,4 @@
+import { Layout } from '@/entities/layout.entity';
 import { User, UserRole, UserStatus } from '@/entities/user.entity';
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
@@ -9,28 +10,51 @@ async function seed() {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [User],
+    entities: [User, Layout],
     synchronize: false,
   });
 
   await dataSource.initialize();
-  const repo = dataSource.getRepository(User);
+  const userRepo = dataSource.getRepository(User);
+  const layoutRepo = dataSource.getRepository(Layout);
 
-  const user = await repo.findOneBy({ email: 'iqbalhossen60483@gmail.com' });
-  if (user) throw new Error('User already exists');
-
-  const newUser = repo.create({
-    name: 'Iqbal Hossen',
+  const user = await userRepo.findOneBy({
     email: 'iqbalhossen60483@gmail.com',
-    password_hash:
-      '$2a$12$uuSEE/lLBPXgWZ6unK6R8u6lf/XGFMFDx1oQXW9SLWIDB5D25uKWu',
-    role: UserRole.SUPER_ADMIN,
-    status: UserStatus.ACTIVE,
   });
+  if (!user) {
+    const newUser = userRepo.create({
+      name: 'Iqbal Hossen',
+      email: 'iqbalhossen60483@gmail.com',
+      password_hash:
+        '$2a$12$uuSEE/lLBPXgWZ6unK6R8u6lf/XGFMFDx1oQXW9SLWIDB5D25uKWu',
+      role: UserRole.SUPER_ADMIN,
+      status: UserStatus.ACTIVE,
+    });
 
-  await repo.save(newUser);
+    await userRepo.save(newUser);
+  }
+  const layouts = [
+    {
+      slug: 'layout_a',
+      name: 'Layout A',
+      description: 'A clean and modern layout with a focus on readability.',
+    },
+    {
+      slug: 'layout_b',
+      name: 'Layout B',
+      description:
+        'A vibrant and dynamic layout designed to capture attention.',
+    },
+  ];
 
-  await dataSource.destroy();
+  for (const layoutData of layouts) {
+    const existing = await layoutRepo.findOneBy({ slug: layoutData.slug });
+    if (!existing) {
+      const layout = layoutRepo.create(layoutData);
+      await layoutRepo.save(layout);
+    }
+  }
+
   console.log('Seed complete.');
 }
 

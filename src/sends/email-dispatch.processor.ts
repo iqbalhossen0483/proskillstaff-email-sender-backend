@@ -26,7 +26,7 @@ interface DispatchJobData {
 export class EmailDispatchProcessor extends WorkerHost {
   private readonly logger = new Logger(EmailDispatchProcessor.name);
   private readonly resend: Resend | null;
-  private readonly fromAddress = 'pro@lead.proskillstaff.com';
+  private readonly fromAddress = 'info@workdear.com';
 
   constructor(
     @InjectRepository(EmailSend)

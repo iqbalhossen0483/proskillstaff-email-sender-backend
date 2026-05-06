@@ -49,8 +49,8 @@ export class DashboardService {
       .innerJoin('s.template', 't')
       .innerJoin('t.layout', 'l')
       .where('s.status = :status', { status: SendStatus.SENT })
-      .andWhere('s.sent_at >= NOW() - INTERVAL :days', {
-        days: `${days} days`,
+      .andWhere(`s.sent_at >= NOW() - (:days * INTERVAL '1 day')`, {
+        days,
       })
       .groupBy("TO_CHAR(s.sent_at, 'YYYY-MM-DD'), l.slug")
       .orderBy("TO_CHAR(s.sent_at, 'YYYY-MM-DD')", 'ASC')
