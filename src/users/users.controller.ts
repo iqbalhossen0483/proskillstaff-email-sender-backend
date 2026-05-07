@@ -1,3 +1,4 @@
+import { CurrentUserId } from '@/common/decorators/current.user';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
@@ -29,8 +30,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/')
-  async findAll(@Query() dto: ListUsersDto) {
-    return this.usersService.findAll(dto);
+  async findAll(
+    @Query() dto: ListUsersDto,
+    @CurrentUserId() currentUserId: number,
+  ) {
+    return this.usersService.findAll(dto, currentUserId);
   }
 
   @Get('/:id')

@@ -27,19 +27,22 @@ export class UsersService {
     @InjectQueue('notifications') private readonly notificationsQueue: Queue,
   ) {}
 
-  async findAll(dto: ListUsersDto) {
-    const qb = this.userRepo.createQueryBuilder('u');
+  async findAll(dto: ListUsersDto, currentUserId: number) {
+    const qb = this.userRepo
+      .createQueryBuilder('users')
+      .where('users.id != :currentUserId', { currentUserId });
 
     if (dto.search) {
-      qb.andWhere('(u.name ILIKE :q OR u.email ILIKE :q)', {
+      qb.andWhere('(users.name ILIKE :q OR users.email ILIKE :q)', {
         q: `%${dto.search}%`,
       });
     }
-    if (dto.role) qb.andWhere('u.role = :role', { role: dto.role });
-    if (dto.status) qb.andWhere('u.status = :status', { status: dto.status });
+    if (dto.role) qb.andWhere('users.role = :role', { role: dto.role });
+    if (dto.status)
+      qb.andWhere('users.status = :status', { status: dto.status });
 
     const [data, total] = await qb
-      .orderBy('u.created_at', 'DESC')
+      .orderBy('users.created_at', 'DESC')
       .skip((dto.page - 1) * dto.limit)
       .take(dto.limit)
       .getManyAndCount();
