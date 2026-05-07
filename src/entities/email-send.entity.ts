@@ -16,26 +16,20 @@ export enum SendStatus {
 }
 
 @Entity('email_sends')
-@Index(['template_id'])
-@Index(['sent_by'])
+@Index(['template.id'])
+@Index(['sent_by.id'])
 @Index(['sent_at'])
 export class EmailSend {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: true, type: 'int' })
-  template_id!: number | null;
-
-  @ManyToOne(() => EmailTemplate, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => EmailTemplate)
   @JoinColumn({ name: 'template_id' })
-  template!: EmailTemplate | null;
+  template!: EmailTemplate;
 
-  @Column({ nullable: true, type: 'int' })
-  sent_by!: number | null;
-
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'sent_by' })
-  sender!: User | null;
+  sent_by!: User;
 
   @Column({ type: 'text', array: true })
   recipient_emails!: string[];

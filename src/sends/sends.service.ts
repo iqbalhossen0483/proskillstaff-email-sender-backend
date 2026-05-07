@@ -30,8 +30,8 @@ export class SendsService {
 
     const emailSend = await this.sendRepo.save(
       this.sendRepo.create({
-        template_id: template.id,
-        sent_by: userId,
+        template: { id: template.id },
+        sent_by: { id: userId },
         recipient_emails: dto.recipient_emails,
         subject,
         status: SendStatus.QUEUED,

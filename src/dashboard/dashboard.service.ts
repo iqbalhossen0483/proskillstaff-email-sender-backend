@@ -107,7 +107,7 @@ export class DashboardService {
       .createQueryBuilder('s')
       .leftJoin('s.template', 't')
       .leftJoin('t.layout', 'l')
-      .leftJoin('s.sender', 'u')
+      .leftJoin('s.sent_by', 'u')
       .select([
         't.name AS "templateName"',
         'l.slug AS "layoutSlug"',
@@ -126,7 +126,7 @@ export class DashboardService {
       .createQueryBuilder('s')
       .leftJoin('s.template', 't')
       .leftJoin('t.layout', 'l')
-      .leftJoin('s.sender', 'u')
+      .leftJoin('s.sent_by', 'u')
       .select([
         's.id AS id',
         't.name AS "templateName"',

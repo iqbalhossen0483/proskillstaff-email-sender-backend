@@ -113,7 +113,7 @@ export class TemplatesService {
     await this.findOne(templateId);
 
     const [data, total] = await this.sendRepo.findAndCount({
-      where: { template_id: templateId },
+      where: { template: { id: templateId } },
       order: { id: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
