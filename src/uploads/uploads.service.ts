@@ -27,7 +27,7 @@ export class UploadsService {
 
   async upload(file: Express.Multer.File): Promise<{ url: string }> {
     const ext = EXTENSION_MAP[file.mimetype] ?? 'jpg';
-    const objectPath = `uploads/${uuidv4()}.${ext}`;
+    const objectPath = `proskill-email-sender/${uuidv4()}.${ext}`;
 
     const gcsFile = this.storage.bucket(this.bucketName).file(objectPath);
     await gcsFile.save(file.buffer, {

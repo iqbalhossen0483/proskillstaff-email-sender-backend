@@ -1,5 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { validate } from '@/config/env.validation';
+import { CsvModule } from '@/csv/csv.module';
 import { DashboardModule } from '@/dashboard/dashboard.module';
 import { EmailSend } from '@/entities/email-send.entity';
 import { EmailTemplate } from '@/entities/email-template.entity';
@@ -55,6 +56,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     DashboardModule,
     UsersModule,
     UploadsModule,
+    CsvModule,
   ],
   controllers: [HealthController],
 })
