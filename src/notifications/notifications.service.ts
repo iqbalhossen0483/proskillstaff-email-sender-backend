@@ -6,11 +6,13 @@ import { Resend } from 'resend';
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
   private readonly resend: Resend | null;
-  private readonly fromAddress = 'noreply@proskill.app';
+  private readonly fromAddress: string;
 
   constructor(private readonly config: ConfigService) {
     const apiKey = this.config.get<string>('RESEND_API_KEY');
     this.resend = apiKey ? new Resend(apiKey) : null;
+    this.fromAddress =
+      config.get<string>('FROM_EMAIL_ADDRESS') ?? 'info@proskillstaff.com';
   }
 
   async sendPasswordReset(email: string, resetLink: string) {

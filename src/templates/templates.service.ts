@@ -26,34 +26,47 @@ export class TemplatesService {
     if (!layout)
       throw new NotFoundException(`Layout ${dto.layout_id} not found`);
 
+    // check the template is already exists with the same name and layout
+    const existing = await this.templateRepo.findOne({
+      where: {
+        name: dto.name,
+        layout: { id: dto.layout_id },
+      },
+    });
+    if (existing) {
+      throw new NotFoundException(
+        `Template with name "${dto.name}" already exists for the same layout`,
+      );
+    }
+
     const template = this.templateRepo.create({
       name: dto.name,
       description: dto.description ?? null,
-      layout_id: dto.layout_id,
+      layout: { id: dto.layout_id },
       content_json: dto.content_json,
-      created_by: userId,
+      created_by: { id: userId },
     });
     return this.templateRepo.save(template);
   }
 
   async findAll(dto: ListTemplatesDto) {
     const qb = this.templateRepo
-      .createQueryBuilder('t')
-      .leftJoinAndSelect('t.layout', 'layout')
-      .where('t.deleted_at IS NULL');
+      .createQueryBuilder('template')
+      .leftJoinAndSelect('template.layout', 'layout')
+      .leftJoinAndSelect('template.created_by', 'created_by')
+      .where('template.deleted_at IS NULL');
 
     if (dto.search) {
-      qb.andWhere('t.name ILIKE :search', { search: `%${dto.search}%` });
+      qb.andWhere('template.name ILIKE :search', { search: `%${dto.search}%` });
     }
     if (dto.layout_id) {
-      qb.andWhere('t.layout_id = :layoutId', { layoutId: dto.layout_id });
-    }
-    if (dto.created_by) {
-      qb.andWhere('t.created_by = :createdBy', { createdBy: dto.created_by });
+      qb.andWhere('template.layout_id = :layoutId', {
+        layoutId: dto.layout_id,
+      });
     }
 
     const [data, total] = await qb
-      .orderBy('t.created_at', 'DESC')
+      .orderBy('template.created_at', 'DESC')
       .skip((dto.page - 1) * dto.limit)
       .take(dto.limit)
       .getManyAndCount();
@@ -64,7 +77,7 @@ export class TemplatesService {
   async findOne(id: number) {
     const template = await this.templateRepo.findOne({
       where: { id },
-      relations: ['layout'],
+      relations: ['layout', 'created_by'],
     });
     if (!template || template.deleted_at) {
       throw new NotFoundException(`Template ${id} not found`);
@@ -88,10 +101,10 @@ export class TemplatesService {
     const copy = this.templateRepo.create({
       name: `Copy of ${source.name}`,
       description: source.description,
-      layout_id: source.layout_id,
+      layout: { id: source.layout.id },
       content_json: source.content_json,
       send_count: 0,
-      created_by: userId,
+      created_by: { id: userId },
     });
     return this.templateRepo.save(copy);
   }

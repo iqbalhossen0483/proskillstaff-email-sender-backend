@@ -25,7 +25,7 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  JWT_EXPIRES_IN: string = '1h';
+  JWT_EXPIRES_IN: string = '4h';
 
   @IsString()
   REDIS_URL!: string;
@@ -39,7 +39,9 @@ class EnvironmentVariables {
   GCS_KEY_FILE!: string;
 
   @IsString()
-  @IsOptional()
+  FROM_EMAIL_ADDRESS!: string;
+
+  @IsString()
   RESEND_API_KEY!: string;
 
   @IsUrl({ require_tld: false })

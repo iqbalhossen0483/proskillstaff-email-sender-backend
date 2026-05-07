@@ -26,7 +26,7 @@ interface DispatchJobData {
 export class EmailDispatchProcessor extends WorkerHost {
   private readonly logger = new Logger(EmailDispatchProcessor.name);
   private readonly resend: Resend | null;
-  private readonly fromAddress = 'info@workdear.com';
+  private readonly fromAddress: string;
 
   constructor(
     @InjectRepository(EmailSend)
@@ -37,6 +37,8 @@ export class EmailDispatchProcessor extends WorkerHost {
     super();
     const apiKey = config.get<string>('RESEND_API_KEY');
     this.resend = apiKey ? new Resend(apiKey) : null;
+    this.fromAddress =
+      config.get<string>('FROM_EMAIL_ADDRESS') ?? 'info@proskillstaff.com';
   }
 
   async process(job: Job<DispatchJobData>): Promise<void> {

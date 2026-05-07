@@ -1,3 +1,5 @@
+import { Layout } from '@/entities/layout.entity';
+import { User } from '@/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,13 +11,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Layout } from '@/entities/layout.entity';
-import { User } from '@/entities/user.entity';
 
 @Entity('email_templates')
 @Index(['name'])
-@Index(['layout_id'])
-@Index(['created_by'])
+@Index(['layout.id'])
+@Index(['created_by.id'])
 @Index(['deleted_at'])
 export class EmailTemplate {
   @PrimaryGeneratedColumn()
@@ -27,9 +27,6 @@ export class EmailTemplate {
   @Column({ nullable: true, type: 'text' })
   description!: string | null;
 
-  @Column()
-  layout_id!: number;
-
   @ManyToOne(() => Layout, { eager: true })
   @JoinColumn({ name: 'layout_id' })
   layout!: Layout;
@@ -37,12 +34,9 @@ export class EmailTemplate {
   @Column({ type: 'jsonb' })
   content_json!: Record<string, unknown>;
 
-  @Column({ nullable: true, type: 'int' })
-  created_by!: number | null;
-
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL', eager: false })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'created_by' })
-  creator!: User | null;
+  created_by!: User;
 
   @CreateDateColumn()
   created_at!: Date;

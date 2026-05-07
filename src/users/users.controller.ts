@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -28,7 +29,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/')
-  async findAll(dto: ListUsersDto) {
+  async findAll(@Query() dto: ListUsersDto) {
     return this.usersService.findAll(dto);
   }
 
