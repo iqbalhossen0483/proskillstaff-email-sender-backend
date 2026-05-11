@@ -1,14 +1,14 @@
+import { AuthController } from '@/auth/auth.controller';
+import { AuthService } from '@/auth/auth.service';
+import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
+import { PasswordReset } from '@/entities/password-reset.entity';
+import { User } from '@/entities/user.entity';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bullmq';
-import { PasswordReset } from '@/entities/password-reset.entity';
-import { User } from '@/entities/user.entity';
-import { AuthController } from '@/auth/auth.controller';
-import { AuthService } from '@/auth/auth.service';
-import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
 
 @Module({
   imports: [

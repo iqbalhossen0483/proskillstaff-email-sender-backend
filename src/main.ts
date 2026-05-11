@@ -25,6 +25,7 @@ async function bootstrap() {
     }),
   );
 
+  // Global Interceptors for serialization and filters for exception handling
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalFilters(new HttpExceptionFilter());
 
