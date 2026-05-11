@@ -19,14 +19,14 @@ async function seed() {
   const layoutRepo = dataSource.getRepository(Layout);
 
   const user = await userRepo.findOneBy({
-    email: 'iqbalhossen60483@gmail.com',
+    email: 'admin@gmail.com',
   });
   if (!user) {
     const newUser = userRepo.create({
       name: 'Iqbal Hossen',
-      email: 'iqbalhossen60483@gmail.com',
+      email: 'admin@gmail.com',
       password_hash:
-        '$2a$12$uuSEE/lLBPXgWZ6unK6R8u6lf/XGFMFDx1oQXW9SLWIDB5D25uKWu',
+        '$2a$12$S3Vee/cjrZnLvn8h6o9s2O1meMFd4Vv6JZbXA/mZfWBoynEc85Po.',
       role: UserRole.SUPER_ADMIN,
       status: UserStatus.ACTIVE,
     });
